@@ -1,10 +1,22 @@
 const { servers } = require('../config');
-const io = require('socket.io')();
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: servers.login.port });
 
-io.on('connection', function(socket){
+wss.on('connection', ws => {
+  ws.on('message', message => {
+    console.log('received: %s', message);
+  });
 
-  console.log('a user connected');
-	socket.emit('connected', 'return -----');
+
+  ws.on('error', err => {
+    console.log(err);
+    ws.close();
+  });
+
+
+  ws.send('something');
+  ws.send('something2');
+  ws.send('something3');
 });
-io.listen(servers.login.port);
-console.log(`login server is listening on ${servers.login.port}`);
+
+console.log(`WebSocket server is listening on ${servers.login.port}`);
