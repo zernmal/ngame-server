@@ -11,5 +11,17 @@ module.exports = {
 
   async setRoom(room) {
     
+  },
+
+  async removeRoom(room) {
+
+  },
+
+  async getList() {
+
+  },
+
+  async genRid() {
+      
   }
 };
