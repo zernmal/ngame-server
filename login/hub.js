@@ -1,12 +1,13 @@
-const rcache = require('../common/cache');
+const rcache = require('../common/cache').room;
 const msg = require('../common/utils/msg');
 
-const _ws;
+let _ws;
 
 // 定时广播房间列表到大厅
 const sendRoomList = () => {
-  setInterval(() => {
-    msg.broadcast('roomlist', rcache.getList());
+  setInterval(async () => {
+    const rl = await rcache.getList();
+    msg.broadcast('roomlist', rl);
   }, 2000);
 };
 

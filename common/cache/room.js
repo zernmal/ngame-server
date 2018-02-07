@@ -18,7 +18,9 @@ module.exports = {
   },
 
   async getList() {
-
+    return {
+      list: [{ id: 98765, pnum: 4}, { id: 98765, pnum: 4}]
+    };
   },
 
   async genRid() {

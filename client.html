@@ -5,12 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+<div id="app">
+    <div v-if="!inRoom">
+        <button @click="newRoom">创建房间</button>
+        <ol>
+            <li v-for="room in roomlist" @click="join(room)" style="cursor: pointer;">
+                {{ room.id }} - {{ room.pnum }}人
+            </li>
+        </ol>
+    </div>
+    
+    <div v-if="inRoom">
+        <h4>{{roomInfo.id}} - {{roomInfo.pnum}} - {{roomInfo.server}}</h4>
+
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
 <script>
-    var socket = io('ws://localhost:5001');
-    socket.on('connected', function(){ console.log('connected');});
-    socket.on('event', function(data){console.log('connect');});
-    socket.on('disconnect', function(){console.log('connect');});
+    let ws;
+    let gid = +Math.random().toFixed(6).substr(2);
+
+    
+
+
+    const send = (route, data) => {
+        ws.send(JSON.stringify({r: route, d: data}));
+    };
+    const app = new Vue({
+        el: '#app',
+        data: {
+            inRoom: false,
+            roomInfo: {},
+            roomlist: []
+        },
+        methods: {
+            join(room) {
+                // connected
+                // send('join', { room});
+            },
+            newRoom() {
+                send()
+            }
+        }
+    });
+    const handler = {
+        roomlist(data) {
+            app.roomlist = data.list;
+        },
+        inroom(data) {
+            app.inRoom = true;
+            
+        }
+    }
+    const dispatch = content => {
+        let msg;
+        try {
+            msg = JSON.parse(content);
+        } catch(e) {
+            return console.log('parse data error');
+        }
+        if (handler[msg.r]) {
+            handler[msg.r](msg.d);
+        } else {
+            console.log(`unhandle route`);
+        }
+    };
+    const connect = () => {
+        ws = new WebSocket('ws://localhost:5001')
+        
+        ws.onopen = function(evt) { 
+            console.log("connected to server");
+            send('login', { gid });
+        };
+        ws.onmessage = function(evt) {
+            dispatch(evt.data);
+        };
+        ws.onerror = function(evt) {
+            ws.close();
+        }
+        ws.onclose = function(evt) {
+            console.log("Connection closed.");
+            connect();
+        };
+    };
+
+    connect();
 </script>
 </body>
 </html>

@@ -1,5 +1,3 @@
-import { fork } from 'cluster';
-
 const WebSocket = require('ws');
 const { servers } = require('../config');
 const msg = require('../common/utils/msg');

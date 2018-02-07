@@ -1,3 +1,4 @@
+const WebSocket = require('ws');
 const handler = {};
 
 let _ws;
